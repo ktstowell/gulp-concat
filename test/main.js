@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var assert = require('stream-assert');
 var test = require('./test-stream');
+var target = require('./function-concat');
 var File = require('gulp-util').File;
 var gulp = require('gulp');
 var sourcemaps = require('gulp-sourcemaps');
@@ -125,14 +126,14 @@ describe('gulp-concat', function() {
         stream.end();
         done();
       });
-  
+
       it('when argument is an object', function(done) {
         var stream = concat({path: 'new.txt'});
         stream.end();
         done();
       });
     });
-    
+
     describe('options', function () {
       it('should support newLine', function (done) {
         test('wadap', 'doe')
@@ -140,7 +141,7 @@ describe('gulp-concat', function() {
           .pipe(assert.length(1))
           .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadap\r\ndoe'); }))
           .pipe(assert.end(done));
-      })
+      });
 
       it('should support empty newLine', function (done) {
         test('wadap', 'doe')
@@ -148,7 +149,7 @@ describe('gulp-concat', function() {
           .pipe(assert.length(1))
           .pipe(assert.first(function (d) { d.contents.toString().should.eql('wadapdoe'); }))
           .pipe(assert.end(done));
-      })
+      });
     });
 
     describe('with object as argument', function () {
@@ -171,6 +172,23 @@ describe('gulp-concat', function() {
           .pipe(concat({cwd: '/home/contra', path: '/home/contra/test/new.txt'}))
           .pipe(assert.length(1))
           .pipe(assert.first(function (d) { d.relative.should.eql('test/new.txt'); }))
+          .pipe(assert.end(done));
+      });
+    });
+
+    describe('with function as argument', function() {
+      var expected = 84;
+
+      it('should write to locations as dictated by the function return', function(done) {
+        gulp.src(__dirname+'/fixtures/**/*.js')
+          .pipe(concat(target))
+          .pipe(gulp.dest(__dirname+'/dist/'))
+          .pipe(assert.last(function() {
+            should((
+              fs.readFileSync(__dirname+'/dist/one.js', {encoding: 'UTF-8'}).length +
+              fs.readFileSync(__dirname+'/dist/two.js', {encoding: 'UTF-8'}).length +
+              fs.readFileSync(__dirname+'/dist/three.js', {encoding: 'UTF-8'}).length)).be.exactly(expected);
+          }))
           .pipe(assert.end(done));
       });
     });

@@ -5,4 +5,4 @@ build
 *.node
 components
 coverage
-spec/dist
+test/dist

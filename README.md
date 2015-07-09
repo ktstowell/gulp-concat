@@ -79,7 +79,7 @@ gulp.task('concat', function() {
 ```
 
 The function will be passed the current file from the stream. The most common use case for this is to output concatenated files into groupings based on their origination. The bottom line is that this allows you to add a destination dynamically.
-To see an example, fork this repository and run the tests in `./spec`.
+To see an example, fork this repository and run the tests in `./test`.
 
 ### Source maps
 
